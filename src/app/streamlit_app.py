@@ -29,8 +29,9 @@ if "analysis" not in st.session_state:
     }
 
 # ---------------------- MODEL PATHS -------------------------
-FAKE_MODEL_PATH = r"D:\FakeNews_AI_Detection\model\final_model"
-AI_MODEL_PATH   = r"D:\FakeNews_AI_Detection\model\ai_detector_model"
+FAKE_MODEL_PATH = "model/final_model"
+AI_MODEL_PATH = "model/ai_detector_model"
+
 
 # ---------------------- MODEL LOADING -------------------------
 @st.cache_resource
