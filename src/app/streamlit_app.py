@@ -31,6 +31,7 @@ if "analysis" not in st.session_state:
 
 # ---------------------- MODEL PATHS -------------------------
 
+# ---------------------- MODEL PATHS -------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 FAKE_MODEL_PATH = os.path.join(BASE_DIR, "..", "..", "model", "final_model")
@@ -40,23 +41,37 @@ AI_MODEL_PATH = os.path.join(BASE_DIR, "..", "..", "model", "ai_detector_model")
 FAKE_MODEL_PATH = os.path.normpath(FAKE_MODEL_PATH)
 AI_MODEL_PATH = os.path.normpath(AI_MODEL_PATH)
 
-
-
 # ---------------------- MODEL LOADING -------------------------
+
+
 @st.cache_resource
 def load_models():
+    print("Loading Fake model...")
     tokenizer_fake = AutoTokenizer.from_pretrained(FAKE_MODEL_PATH)
     model_fake = AutoModelForSequenceClassification.from_pretrained(FAKE_MODEL_PATH)
+    print("Fake model loaded!")
 
+    print("Loading AI model...")
     tokenizer_ai = AutoTokenizer.from_pretrained(AI_MODEL_PATH)
     model_ai = AutoModelForSequenceClassification.from_pretrained(AI_MODEL_PATH)
+    print("AI model loaded!")
 
     return tokenizer_fake, model_fake, tokenizer_ai, model_ai
 
 tokenizer_fake, model_fake, tokenizer_ai, model_ai = load_models()
 
-classifier_fake = pipeline("text-classification", model=model_fake, tokenizer=tokenizer_fake, return_all_scores=True)
-classifier_ai = pipeline("text-classification", model=model_ai, tokenizer=tokenizer_ai, return_all_scores=True)
+# ---------------------- PIPELINE CREATION -------------------------
+@st.cache_resource
+def create_pipelines():
+    classifier_fake = pipeline(
+        "text-classification", model=model_fake, tokenizer=tokenizer_fake, return_all_scores=True
+    )
+    classifier_ai = pipeline(
+        "text-classification", model=model_ai, tokenizer=tokenizer_ai, return_all_scores=True
+    )
+    return classifier_fake, classifier_ai
+
+classifier_fake, classifier_ai = create_pipelines()
 
 # ---------------------- CLASSIFY FUNCTIONS -------------------------
 def classify_fake(text, chunk_size=512):
