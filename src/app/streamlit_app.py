@@ -29,17 +29,18 @@ if "analysis" not in st.session_state:
         "ai_prob": 0
     }
 
-# ---------------------- MODEL PATHS -------------------------
+# ---------------------- MODEL PATHS ----------------------
 
-# ---------------------- MODEL PATHS -------------------------
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Assuming this file is at src/app/streamlit_app.py
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
 
-FAKE_MODEL_PATH = os.path.join(BASE_DIR, "..", "..", "model", "final_model")
-AI_MODEL_PATH = os.path.join(BASE_DIR, "..", "..", "model", "ai_detector_model")
+FAKE_MODEL_PATH = os.path.join(REPO_ROOT, "model", "final_model")
+AI_MODEL_PATH = os.path.join(REPO_ROOT, "model", "ai_detector_model")
 
-# Normalize paths for safety
+# Normalize paths
 FAKE_MODEL_PATH = os.path.normpath(FAKE_MODEL_PATH)
 AI_MODEL_PATH = os.path.normpath(AI_MODEL_PATH)
+
 
 # ---------------------- MODEL LOADING -------------------------
 
