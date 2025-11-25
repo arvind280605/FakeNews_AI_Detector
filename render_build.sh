@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# ---------------------- SKIP GIT LFS DOWNLOAD -------------------------
+git lfs install --skip-smudge
+
 # ---------------------- CLEAN EXISTING MODEL DIRECTORIES -------------------------
 rm -rf model/ai_detector_model
 rm -rf model/final_model
