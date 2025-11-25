@@ -11,6 +11,7 @@ import librosa
 import matplotlib.pyplot as plt
 from textwrap import wrap  
 import matplotlib.pyplot as plt
+import os
 
 
 ## ---------------------- SESSION STATE -------------------------
@@ -29,8 +30,16 @@ if "analysis" not in st.session_state:
     }
 
 # ---------------------- MODEL PATHS -------------------------
-FAKE_MODEL_PATH = "model/final_model"
-AI_MODEL_PATH = "model/ai_detector_model"
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+FAKE_MODEL_PATH = os.path.join(BASE_DIR, "..", "..", "model", "final_model")
+AI_MODEL_PATH = os.path.join(BASE_DIR, "..", "..", "model", "ai_detector_model")
+
+# Normalize paths for safety
+FAKE_MODEL_PATH = os.path.normpath(FAKE_MODEL_PATH)
+AI_MODEL_PATH = os.path.normpath(AI_MODEL_PATH)
+
 
 
 # ---------------------- MODEL LOADING -------------------------
