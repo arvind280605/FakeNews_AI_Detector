@@ -31,93 +31,131 @@ if "analysis" not in st.session_state:
 
 # ---------------------- MODEL PATHS ----------------------
 
-# Assuming this file is at src/app/streamlit_app.py
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
-
-FAKE_MODEL_PATH = os.path.join(REPO_ROOT, "model", "final_model")
-AI_MODEL_PATH = os.path.join(REPO_ROOT, "model", "ai_detector_model")
-
-# Normalize paths
-FAKE_MODEL_PATH = os.path.normpath(FAKE_MODEL_PATH)
-AI_MODEL_PATH = os.path.normpath(AI_MODEL_PATH)
+FAKE_MODEL_PATH = "model/final_model"
+AI_MODEL_PATH = "model/ai_detector_model"
 
 
 # ---------------------- MODEL LOADING -------------------------
 
-
 @st.cache_resource
 def load_models():
     print("Loading Fake model...")
+    device = "cpu"
+
     tokenizer_fake = AutoTokenizer.from_pretrained(FAKE_MODEL_PATH)
-    model_fake = AutoModelForSequenceClassification.from_pretrained(FAKE_MODEL_PATH)
+    model_fake = AutoModelForSequenceClassification.from_pretrained(
+        FAKE_MODEL_PATH,
+        torch_dtype=torch.float32
+    ).to(device)
+
     print("Fake model loaded!")
 
     print("Loading AI model...")
     tokenizer_ai = AutoTokenizer.from_pretrained(AI_MODEL_PATH)
-    model_ai = AutoModelForSequenceClassification.from_pretrained(AI_MODEL_PATH)
+    model_ai = AutoModelForSequenceClassification.from_pretrained(
+        AI_MODEL_PATH,
+        torch_dtype=torch.float32
+    ).to(device)
+
     print("AI model loaded!")
 
     return tokenizer_fake, model_fake, tokenizer_ai, model_ai
 
-tokenizer_fake, model_fake, tokenizer_ai, model_ai = load_models()
 
 # ---------------------- PIPELINE CREATION -------------------------
+
 @st.cache_resource
 def create_pipelines():
     classifier_fake = pipeline(
-        "text-classification", model=model_fake, tokenizer=tokenizer_fake, return_all_scores=True
+        "text-classification",
+        model=model_fake,
+        tokenizer=tokenizer_fake,
+        return_all_scores=True
     )
     classifier_ai = pipeline(
-        "text-classification", model=model_ai, tokenizer=tokenizer_ai, return_all_scores=True
+        "text-classification",
+        model=model_ai,
+        tokenizer=tokenizer_ai,
+        return_all_scores=True
     )
     return classifier_fake, classifier_ai
 
+
 classifier_fake, classifier_ai = create_pipelines()
 
+
 # ---------------------- CLASSIFY FUNCTIONS -------------------------
+
 def classify_fake(text, chunk_size=512):
+    device = "cpu"
+
     inputs = tokenizer_fake(text, return_tensors="pt", truncation=False)
     input_ids = inputs["input_ids"][0]
-    chunks = [input_ids[i:i+chunk_size] for i in range(0, len(input_ids), chunk_size)]
-    
-    scores_list = []
-    progress = st.progress(0)  # progress bar
-    total_chunks = len(chunks)
-    
-    for i, chunk in enumerate(chunks):
-        chunk_inputs = {"input_ids": chunk.unsqueeze(0)}
-        if "attention_mask" in inputs:
-            chunk_inputs["attention_mask"] = inputs["attention_mask"][0][i*chunk_size : i*chunk_size + len(chunk)].unsqueeze(0)
-        outputs = model_fake(**chunk_inputs)
-        scores = torch.softmax(outputs.logits, dim=-1)
-        scores_list.append(scores[0].detach().numpy())
-        
-        progress.progress(int((i+1)/total_chunks*100))  # update progress
-    
-    avg_scores = torch.tensor(scores_list).mean(dim=0)
-    return [{"label": "REAL", "score": avg_scores[0].item()}, {"label": "FAKE", "score": avg_scores[1].item()}]
+    chunks = [input_ids[i:i + chunk_size] for i in range(0, len(input_ids), chunk_size)]
 
-def classify_ai(text, chunk_size=512):
-    inputs = tokenizer_ai(text, return_tensors="pt", truncation=False)
-    input_ids = inputs["input_ids"][0]
-    chunks = [input_ids[i:i+chunk_size] for i in range(0, len(input_ids), chunk_size)]
-    
     scores_list = []
     progress = st.progress(0)
     total_chunks = len(chunks)
-    
+
     for i, chunk in enumerate(chunks):
+
         chunk_inputs = {"input_ids": chunk.unsqueeze(0)}
         if "attention_mask" in inputs:
-            chunk_inputs["attention_mask"] = inputs["attention_mask"][0][i*chunk_size : i*chunk_size + len(chunk)].unsqueeze(0)
+            chunk_inputs["attention_mask"] = inputs["attention_mask"][0][
+                i * chunk_size: i * chunk_size + len(chunk)
+            ].unsqueeze(0)
+
+        # Move tensors to CPU
+        chunk_inputs = {k: v.to(device) for k, v in chunk_inputs.items()}
+
+        outputs = model_fake(**chunk_inputs)
+        scores = torch.softmax(outputs.logits, dim=-1)
+        scores_list.append(scores[0].detach().numpy())
+
+        progress.progress(int((i + 1) / total_chunks * 100))
+
+    avg_scores = torch.tensor(scores_list).mean(dim=0)
+
+    return [
+        {"label": "REAL", "score": avg_scores[0].item()},
+        {"label": "FAKE", "score": avg_scores[1].item()}
+    ]
+
+
+def classify_ai(text, chunk_size=512):
+    device = "cpu"
+
+    inputs = tokenizer_ai(text, return_tensors="pt", truncation=False)
+    input_ids = inputs["input_ids"][0]
+    chunks = [input_ids[i:i + chunk_size] for i in range(0, len(input_ids), chunk_size)]
+
+    scores_list = []
+    progress = st.progress(0)
+    total_chunks = len(chunks)
+
+    for i, chunk in enumerate(chunks):
+
+        chunk_inputs = {"input_ids": chunk.unsqueeze(0)}
+        if "attention_mask" in inputs:
+            chunk_inputs["attention_mask"] = inputs["attention_mask"][0][
+                i * chunk_size: i * chunk_size + len(chunk)
+            ].unsqueeze(0)
+
+        # Move tensors to CPU
+        chunk_inputs = {k: v.to(device) for k, v in chunk_inputs.items()}
+
         outputs = model_ai(**chunk_inputs)
         scores = torch.softmax(outputs.logits, dim=-1)
         scores_list.append(scores[0].detach().numpy())
-        
-        progress.progress(int((i+1)/total_chunks*100))
-    
+
+        progress.progress(int((i + 1) / total_chunks * 100))
+
     avg_scores = torch.tensor(scores_list).mean(dim=0)
-    return [{"label": "HUMAN", "score": avg_scores[0].item()}, {"label": "AI", "score": avg_scores[1].item()}]
+
+    return [
+        {"label": "HUMAN", "score": avg_scores[0].item()},
+        {"label": "AI", "score": avg_scores[1].item()}
+    ]
 
 # ---------------------- UI CUSTOM STYLING -------------------------
 st.markdown(
