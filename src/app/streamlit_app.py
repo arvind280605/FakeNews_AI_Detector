@@ -64,22 +64,18 @@ tokenizer_fake, model_fake, tokenizer_ai, model_ai = load_models()
 
 # ---------------------- PIPELINE CREATION -------------------------
 @st.cache_resource
-def create_pipelines(tokenizer_fake, model_fake, tokenizer_ai, model_ai):
-    classifier_fake = pipeline(
-        "text-classification",
-        model=model_fake,
-        tokenizer=tokenizer_fake,
-        return_all_scores=True
-    )
+def create_pipelines(_tokenizer_fake, _tokenizer_ai, _model_fake, _model_ai):
+    # Use them normally inside
+    tokenizer_fake = _tokenizer_fake
+    tokenizer_ai = _tokenizer_ai
+    model_fake = _model_fake
+    model_ai = _model_ai
 
-    classifier_ai = pipeline(
-        "text-classification",
-        model=model_ai,
-        tokenizer=tokenizer_ai,
-        return_all_scores=True
-    )
+    classifier_fake = pipeline("text-classification", model=model_fake, tokenizer=tokenizer_fake)
+    classifier_ai = pipeline("text-classification", model=model_ai, tokenizer=tokenizer_ai)
 
     return classifier_fake, classifier_ai
+
 
 
 # Create pipelines here
