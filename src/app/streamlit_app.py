@@ -13,12 +13,10 @@ from textwrap import wrap
 import matplotlib.pyplot as plt
 import os
 
-
 ## ---------------------- SESSION STATE -------------------------
 if "text" not in st.session_state:
     st.session_state["text"] = ""
 
-# Initialize analysis state to avoid KeyError
 if "analysis" not in st.session_state:
     st.session_state["analysis"] = {
         "fake_label": "",
@@ -39,44 +37,43 @@ def load_models():
     print("Loading models...")
     device = "cpu"
 
-    # Load tokenizers and models
     tokenizer_fake = AutoTokenizer.from_pretrained(FAKE_MODEL_PATH)
     model_fake = AutoModelForSequenceClassification.from_pretrained(
         FAKE_MODEL_PATH,
-        dtype=torch.float32  # updated from torch_dtype
+        dtype=torch.float32
     ).to(device)
 
     tokenizer_ai = AutoTokenizer.from_pretrained(AI_MODEL_PATH)
     model_ai = AutoModelForSequenceClassification.from_pretrained(
         AI_MODEL_PATH,
-        dtype=torch.float32  # updated from torch_dtype
+        dtype=torch.float32
     ).to(device)
 
     print("All models loaded.")
     return tokenizer_fake, model_fake, tokenizer_ai, model_ai
 
+# Load models ONCE
+tokenizer_fake, model_fake, tokenizer_ai, model_ai = load_models()
 
 # ---------------------- PIPELINE CREATION -------------------------
 @st.cache_resource
 def create_pipelines(_tokenizer_fake, _tokenizer_ai, _model_fake, _model_ai):
-    # Add leading underscore to avoid Streamlit caching error
     tokenizer_fake = _tokenizer_fake
     tokenizer_ai = _tokenizer_ai
     model_fake = _model_fake
     model_ai = _model_ai
 
-    # Create pipelines correctly
     classifier_fake = pipeline(
         task="text-classification",
         model=model_fake,
         tokenizer=tokenizer_fake,
-        device=-1  # CPU
+        device=-1
     )
     classifier_ai = pipeline(
         task="text-classification",
         model=model_ai,
         tokenizer=tokenizer_ai,
-        device=-1  # CPU
+        device=-1
     )
 
     return classifier_fake, classifier_ai
@@ -85,7 +82,6 @@ def create_pipelines(_tokenizer_fake, _tokenizer_ai, _model_fake, _model_ai):
 classifier_fake, classifier_ai = create_pipelines(
     tokenizer_fake, tokenizer_ai, model_fake, model_ai
 )
-
 
 # ---------------------- CLASSIFY FUNCTIONS -------------------------
 def classify_fake(text, chunk_size=512):
@@ -112,7 +108,6 @@ def classify_fake(text, chunk_size=512):
         {"label": "FAKE", "score": avg_scores[1].item()}
     ]
 
-
 def classify_ai(text, chunk_size=512):
     inputs = tokenizer_ai(text, return_tensors="pt", truncation=False)
     input_ids = inputs["input_ids"][0]
@@ -137,55 +132,20 @@ def classify_ai(text, chunk_size=512):
         {"label": "AI", "score": avg_scores[1].item()}
     ]
 
-
 # ---------------------- UI CUSTOM STYLING -------------------------
 st.markdown(
     """
     <style>
-    /* Overall app background */
-    .stApp {
-        background-color: #121212;
-        color: #BB86FC;
-    }
-
-    /* Sidebar labels and input labels */
-    label, .stTextInput>label, .stTextArea>label, .stRadio>div>label>div {
-        color: #BB86FC !important;
-    }
-
-    /* Text area for typed text or uploaded content */
-    .stTextArea>div>div>textarea,
-    .stTextArea>div>div>div>textarea {
-        background-color: #1E1E1E !important;  
-        color: #BB86FC !important;             
-        border: 1px solid #03DAC6 !important;  
-        font-size: 14px;
-        height: auto;
-        min-height: 150px;
-        max-height: 400px;
-    }
-
-    /* Placeholder text */
-    .stTextArea>div>div>textarea::placeholder {
-        color: #BB86FC !important;
-    }
-
-    /* File uploader text */
-    .stFileUploader>div>div>label, .stFileUploader>div>div>p {
-        color: #03DAC6 !important;
-    }
-
-    /* Buttons */
-    button {
-        background-color: #BB86FC !important;
-        color: #121212 !important;
-        border-radius: 8px;
-    }
+    .stApp { background-color: #121212; color: #BB86FC; }
+    label, .stTextInput>label, .stTextArea>label, .stRadio>div>label>div { color: #BB86FC !important; }
+    .stTextArea>div>div>textarea, .stTextArea>div>div>div>textarea { background-color: #1E1E1E !important; color: #BB86FC !important; border: 1px solid #03DAC6 !important; font-size: 14px; height: auto; min-height: 150px; max-height: 400px; }
+    .stTextArea>div>div>textarea::placeholder { color: #BB86FC !important; }
+    .stFileUploader>div>div>label, .stFileUploader>div>div>p { color: #03DAC6 !important; }
+    button { background-color: #BB86FC !important; color: #121212 !important; border-radius: 8px; }
     </style>
     """,
     unsafe_allow_html=True
 )
-
 
 st.title("🧠 Fake News & AI Text Detection System")
 
@@ -194,13 +154,10 @@ input_mode = st.radio(
     ["📝 Type Text", "🎤 Voice Input", "📂 Upload File"]
 )
 
-
 # ---------------------- Handle Inputs -------------------------
-# 1️⃣ Manual typing
 if input_mode == "📝 Type Text":
     st.session_state["text"] = st.text_area("Enter text to analyze:", st.session_state["text"], height=150)
 
-# 2️⃣ Voice Input
 elif input_mode == "🎤 Voice Input":
     if st.button("🎙 Start Recording"):
         try:
@@ -214,7 +171,6 @@ elif input_mode == "🎤 Voice Input":
         except Exception as e:
             st.error(f"Voice Recognition Error: {e}")
 
-# 3️⃣ File Upload
 elif input_mode == "📂 Upload File":
     file = st.file_uploader("Upload TXT / PDF / CSV / AUDIO (wav/mp3)", type=["txt", "pdf", "csv", "wav", "mp3"])
     if file:
@@ -235,11 +191,9 @@ elif input_mode == "📂 Upload File":
             extracted = recognizer.recognize_google(audio_file)
             st.session_state["text"] = extracted
 
-
 # ---------------------- SHOW TEXT -------------------------
 if st.session_state["text"]:
     st.text_area("📌 Text to Analyze:", st.session_state["text"], height=200)
-
 
 # ---------------------- ANALYZE BUTTON -------------------------
 if st.button("🔍 Analyze Text"):
@@ -249,19 +203,14 @@ if st.button("🔍 Analyze Text"):
         st.error("⚠ Please enter or upload text first.")
     else:
         if len(text.split()) < 5:
-            st.info(
-                "ℹ️ Note: The input text is quite short. This system is optimized for analyzing longer content "
-                "such as news articles, assignments, AI-generated text, or code snippets. "
-                "Short inputs may result in less reliable predictions."
-            )
+            st.info("ℹ️ Input text is short; analysis may be less reliable.")
             proceed_short = st.button("Analyze short text anyway")
             if not proceed_short:
                 st.stop()
-
         if len(text) > 5000:
             st.info("⚠ Large file detected. Analysis may take a few minutes, please wait...")
 
-        with st.spinner("Analyzing text... ⏳ This may take a while for large files."):
+        with st.spinner("Analyzing text... ⏳"):
             try:
                 fake_out = classify_fake(text)
                 ai_out   = classify_ai(text)
@@ -293,6 +242,7 @@ if st.button("🔍 Analyze Text"):
             "human_prob": human_prob,
             "ai_prob": ai_prob
         }
+
 
 
 # ---------------------- CHARTS -------------------------
