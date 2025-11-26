@@ -30,18 +30,16 @@ if "analysis" not in st.session_state:
     }
 
 # ---------------------- MODEL PATHS ----------------------
-
 FAKE_MODEL_PATH = "model/final_model"
 AI_MODEL_PATH = "model/ai_detector_model"
 
-
 # ---------------------- MODEL LOADING -------------------------
-
 @st.cache_resource
 def load_models():
     print("Loading models...")
     device = "cpu"
 
+    # Load tokenizers and models
     tokenizer_fake = AutoTokenizer.from_pretrained(FAKE_MODEL_PATH)
     model_fake = AutoModelForSequenceClassification.from_pretrained(
         FAKE_MODEL_PATH,
@@ -57,30 +55,37 @@ def load_models():
     print("All models loaded.")
     return tokenizer_fake, model_fake, tokenizer_ai, model_ai
 
-
 # Load models ONCE here
 tokenizer_fake, model_fake, tokenizer_ai, model_ai = load_models()
-
 
 # ---------------------- PIPELINE CREATION -------------------------
 @st.cache_resource
 def create_pipelines(_tokenizer_fake, _tokenizer_ai, _model_fake, _model_ai):
-    # Use them normally inside
+    # Add leading underscore to avoid Streamlit caching error
     tokenizer_fake = _tokenizer_fake
     tokenizer_ai = _tokenizer_ai
     model_fake = _model_fake
     model_ai = _model_ai
 
-    classifier_fake = pipeline("text-classification", model=model_fake, tokenizer=tokenizer_fake)
-    classifier_ai = pipeline("text-classification", model=model_ai, tokenizer=tokenizer_ai)
+    # Create pipelines correctly
+    classifier_fake = pipeline(
+        task="text-classification",
+        model=model_fake,
+        tokenizer=tokenizer_fake,
+        device=-1  # CPU
+    )
+    classifier_ai = pipeline(
+        task="text-classification",
+        model=model_ai,
+        tokenizer=tokenizer_ai,
+        device=-1  # CPU
+    )
 
     return classifier_fake, classifier_ai
 
-
-
-# Create pipelines here
+# Create pipelines
 classifier_fake, classifier_ai = create_pipelines(
-    tokenizer_fake, model_fake, tokenizer_ai, model_ai
+    tokenizer_fake, tokenizer_ai, model_fake, model_ai
 )
 
 
