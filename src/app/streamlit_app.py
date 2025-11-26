@@ -43,20 +43,18 @@ def load_models():
     tokenizer_fake = AutoTokenizer.from_pretrained(FAKE_MODEL_PATH)
     model_fake = AutoModelForSequenceClassification.from_pretrained(
         FAKE_MODEL_PATH,
-        torch_dtype=torch.float32
+        dtype=torch.float32  # updated from torch_dtype
     ).to(device)
 
     tokenizer_ai = AutoTokenizer.from_pretrained(AI_MODEL_PATH)
     model_ai = AutoModelForSequenceClassification.from_pretrained(
         AI_MODEL_PATH,
-        torch_dtype=torch.float32
+        dtype=torch.float32  # updated from torch_dtype
     ).to(device)
 
     print("All models loaded.")
     return tokenizer_fake, model_fake, tokenizer_ai, model_ai
 
-# Load models ONCE here
-tokenizer_fake, model_fake, tokenizer_ai, model_ai = load_models()
 
 # ---------------------- PIPELINE CREATION -------------------------
 @st.cache_resource
