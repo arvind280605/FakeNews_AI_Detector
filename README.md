@@ -5,6 +5,7 @@ A Streamlit-based application that detects fake news, AI-generated text, and pla
 The system analyzes text from manual input, voice input, or uploaded files (TXT, PDF, CSV, WAV, MP3) and generates a detailed report with probabilities, charts, and confidence metrics.
 
 📌 Features
+
 📰 Fake News Detection
 
 Classifies text as REAL or FAKE.
