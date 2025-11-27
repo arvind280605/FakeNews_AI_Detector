@@ -5,67 +5,82 @@ A Streamlit-based application that detects fake news, AI-generated text, and pla
 The system analyzes text from manual input, voice input, or uploaded files (TXT, PDF, CSV, WAV, MP3) and generates a detailed report with probabilities, charts, and confidence metrics.
 
 📌 Features
+📰 Fake News Detection
 
-Fake News Detection – Classifies text as REAL or FAKE.
+Classifies text as REAL or FAKE.
 
-AI Text Detection – Identifies HUMAN-written vs AI-generated text.
+🤖 AI Text Detection
 
-Multi-input Support:
+Identifies HUMAN-written vs AI-generated text.
+
+📝 Multi-input Support
 
 Typed text
 
 Web Scraping
 
-Extract text from URLs such as articles, blogs, Instagram posts, etc.
-(Using BeautifulSoup / Requests, depending on your implementation.)
+Extract text from URLs (articles, blogs, Instagram posts, etc.)
 
 Voice input
 
 File upload (TXT, PDF, CSV, WAV, MP3)
 
-Chunked Processing – Handles large text files efficiently.
+📚 Chunked Processing
 
-Visualization – Bar chart for fake news confidence, pie chart for AI detection, and progress meter.
+Handles large text files efficiently.
 
-PDF Report Generation – Download full analysis with text and probabilities.
+📊 Visualization
 
-Smart Alerts:
+Bar chart for fake news confidence
 
-Warns if input text is very short (predictions may be unreliable).
+Pie chart for AI detection
 
-Informs users when large files may take longer to process.
+Progress meter
+
+📄 PDF Report Generation
+
+Download full analysis with text and probabilities.
+
+⚠️ Smart Alerts
+
+Warns if input text is too short
+
+Notifies when large files may take longer
 
 🛠 Technologies Used
 
-Python 3.10+
+🐍 Python 3.10+
 
-Streamlit – Interactive web interface
+🌐 Streamlit – Interactive web interface
 
-PyTorch – Deep learning backend
+🔥 PyTorch – Deep learning backend
 
-Transformers (Hugging Face) – Pre-trained NLP models
+🤗 Transformers – Pre-trained NLP models
 
-Librosa & SpeechRecognition – Audio processing
+🎤 Librosa & SpeechRecognition – Audio processing
 
-Matplotlib – Charts for visualization
+📈 Matplotlib – Charts & plots
 
-PyPDF2 & Pandas – PDF and CSV file handling
+📄 PyPDF2 – PDF handling
+
+🧮 Pandas – CSV / data processing
 
 📝 How It Works
 
-Input Text: Type, speak, or upload a file.
+🧾 Input Text
+Type, speak, upload, or scrape text.
 
-Preprocessing: Text is cleaned and split into chunks if large.
+🧹 Preprocessing
+Text is cleaned and chunked if large.
 
-Prediction:
+🎯 Prediction
 
-Fake news model outputs REAL or FAKE probabilities.
+Fake news model → REAL or FAKE
 
-AI detection model outputs HUMAN or AI-generated probabilities.
+AI detector → HUMAN or AI probabilities
 
+📊 Visualization
+Charts + progress bars for confidence.
 
-
-
-Visualization: Shows charts and progress bars for confidence.
-
-Export Report: Download a PDF summarizing results and analyzed text.
+📥 Export Report
+Download a PDF summarizing the full analysis.
