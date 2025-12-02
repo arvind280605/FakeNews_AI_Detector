@@ -1,87 +1,106 @@
 🧠 Fake News & AI Text Detection System
 
-A Streamlit-based application that detects fake news, AI-generated text, and plagiarism in assignments or articles using advanced NLP and deep learning models.
+A Streamlit-based intelligent analysis system that detects fake news, AI-generated text, and plagiarism-like patterns in assignments, articles, or audio transcriptions using advanced NLP and deep learning models.
 
-The system analyzes text from manual input, voice input, or uploaded files (TXT, PDF, CSV, WAV, MP3) and generates a detailed report with probabilities, charts, and confidence metrics.
+The system accepts text through manual input, voice input, web scraping, or file uploads (TXT, PDF, CSV, WAV, MP3) and generates a detailed report with probabilities, charts, and confidence metrics.
 
-📌 Features
+Features:
 
-📰 Fake News Detection
+Fake News Detection
 
-Classifies text as REAL or FAKE.
+Classifies text as REAL or FAKE using a deep learning classifier.
 
-🤖 AI Text Detection
+AI Text Detection
 
-Identifies HUMAN-written vs AI-generated text.
+Distinguishes between HUMAN-written and AI-generated content.
 
-📝 Multi-input Support
+Shows probability scores and confidence levels.
+
+Multi-Input Support
 
 Typed text
 
-Web Scraping
+Voice input (WAV / MP3)
 
-Extract text from URLs (articles, blogs, Instagram posts, etc.)
+File uploads (TXT, PDF, CSV, audio files)
 
-Voice input
+Web scraping (extracts text from URLs, blogs, news articles, Instagram posts, etc.)
 
-File upload (TXT, PDF, CSV, WAV, MP3)
+Chunked Processing
 
-📚 Chunked Processing
+Automatically splits large text into chunks for efficient processing.
 
-Handles large text files efficiently.
+Prevents memory issues and ensures fast analysis.
 
-📊 Visualization
+Visualization
 
-Bar chart for fake news confidence
+Bar charts for fake news confidence
 
-Pie chart for AI detection
+Pie charts for AI detection results
 
-Progress meter
+Progress meters during processing
 
-📄 PDF Report Generation
+PDF Report Generation
 
-Download full analysis with text and probabilities.
+One-click export of a full PDF report containing:
 
-⚠️ Smart Alerts
+Extracted text
 
-Warns if input text is too short
+Fake news result
 
-Notifies when large files may take longer
+AI-text probability
 
-🛠 Technologies Used
+Charts and confidence scores
 
-🐍 Python 3.10+
+Smart Alerts
 
-🌐 Streamlit – Interactive web interface
+Warns users if the input text is too short.
 
-🔥 PyTorch – Deep learning backend
+Alerts when large files may take longer to process.
 
-🤗 Transformers – Pre-trained NLP models
+Technologies Used:
 
-🎤 Librosa & SpeechRecognition – Audio processing
+Python 3.10+
 
-📈 Matplotlib – Charts & plots
+Streamlit – Interactive web UI
 
-📄 PyPDF2 – PDF handling
+PyTorch – Deep learning model backend
 
-🧮 Pandas – CSV / data processing
+Transformers (HuggingFace) – Pre-trained NLP models
 
-📝 How It Works
+Librosa & SpeechRecognition – Audio processing
 
-🧾 Input Text
-Type, speak, upload, or scrape text.
+Matplotlib – Charts and visualizations
 
-🧹 Preprocessing
-Text is cleaned and chunked if large.
+PyPDF2 – PDF extraction and processing
 
-🎯 Prediction
+Pandas – CSV and data handling
 
-Fake news model → REAL or FAKE
+How It Works:
+1. Input Text
 
-AI detector → HUMAN or AI probabilities
+Users can type, speak, upload, or scrape text from a URL.
 
-📊 Visualization
-Charts + progress bars for confidence.
+2. Preprocessing
 
-📥 Export Report
-Download a PDF summarizing the full analysis.
+Text is cleaned
+
+Large files are split into chunks for efficient model processing
+
+3. Prediction
+
+Fake News Model: Predicts REAL or FAKE
+
+AI Detector: Computes HUMAN vs AI probabilities
+
+4. Visualization
+
+Confidence bar charts
+
+AI detection pie chart
+
+Progress indicators
+
+5. Export Report
+
+Generates a downloadable PDF summary of the complete analysis.
