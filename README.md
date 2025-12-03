@@ -1,4 +1,4 @@
-🧠 Fake News & AI Text Detection System
+ Fake News & AI Text Detection System
 
 A Streamlit-based intelligent analysis system that detects fake news, AI-generated text, and plagiarism-like patterns in assignments, articles, or audio transcriptions using advanced NLP and deep learning models.
 
